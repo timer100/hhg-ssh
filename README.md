@@ -8,27 +8,27 @@ A Python research toolkit developed to reproduce the SSH-chain studies of Jürß
 
 For an open chain of $N$ sites, the SSH Hamiltonian is
 
-$$
+```math
 H_0 = \sum_{n=1}^{N/2} v\,c^\dagger_{n,A}c_{n,B}
     + \sum_{n=1}^{N/2-1} w\,c^\dagger_{n,B}c_{n+1,A}
     + \mathrm{H.c.}
-$$
+```
 
 Here $v$ and $w$ are intracell and intercell hopping amplitudes. With zero on-site potential, $|v|<|w|$ supports topological edge states; in this implementation it corresponds to `delta < 0`. Their presence can strongly modify the subgap harmonic yield [1].
 
 In atomic units, the occupied orbitals evolve in the length gauge:
 
-$$
+```math
 i\partial_t|\psi_m(t)\rangle = [H_0+E(t)\hat{x}]|\psi_m(t)\rangle,
 \qquad E(t)=-\partial_t A(t).
-$$
+```
 
 The solver uses midpoint Crank–Nicolson propagation and a sine-squared vector-potential envelope. At half filling, the spectrum follows from the total position expectation and a Hann window $W(t)$:
 
-$$
+```math
 X(t)=\sum_{m=1}^{N/2}\langle\psi_m(t)|\hat{x}|\psi_m(t)\rangle,
 \qquad S(\Omega)\propto\left|\mathcal{F}[W(t)\ddot{X}(t)](\Omega)\right|^2.
-$$
+```
 
 ## Implementation
 
@@ -41,7 +41,7 @@ $$
 Use Python 3.12 or newer. The local verification baseline is Python 3.13.16.
 
 ```bash
-git clone https://github.com/timer100/High-Oder-Harmonic-Generation-SSH.git hhg-ssh
+git clone https://github.com/timer100/hhg-ssh.git
 cd hhg-ssh
 python -m venv .venv
 ```
