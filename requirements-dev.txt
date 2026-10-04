@@ -85,6 +85,7 @@ rfc3987-syntax==1.1.0
 rpds-py==2026.6.3
 scipy==1.18.1
 send2trash==2.1.0
+setuptools==84.0.0
 six==1.17.0
 soupsieve==2.10
 stack-data==0.6.3

@@ -11,17 +11,22 @@ class Field(ABC):
 
 class SinSquaredPulse(Field):
     """
-    Electric field pulse with a sin^2 envelope.
+    Electric field derived from a finite sin^2 vector-potential envelope.
     E(t) = -A0 * [ d(env)/dt * sin(wt) + w * env * cos(wt) ]
+    The field is zero outside 0 <= t <= 2*pi*ncyc/omega.
     """
     
     def __init__(self, A0: float = 0.2, omega: float = 0.0075, ncyc: float = 5):
         """
         Args:
-            A0 (float): Amplitude.
-            omega (float): Frequency.
-            ncyc (float): Number of optical cycles.
+            A0 (float): Vector-potential amplitude in atomic units.
+            omega (float): Positive angular frequency in atomic units.
+            ncyc (float): Positive number of optical cycles.
         """
+        if not np.isfinite(omega) or omega <= 0:
+            raise ValueError("omega must be finite and positive.")
+        if not np.isfinite(ncyc) or ncyc <= 0:
+            raise ValueError("ncyc must be finite and positive.")
         self.A0 = A0
         self.omega = omega
         self.ncyc = ncyc
@@ -30,10 +35,10 @@ class SinSquaredPulse(Field):
         """
         Calculate electric field at time t.
         """
+        if t <= 0 or t >= (2 * np.pi * self.ncyc / self.omega):
+            return 0.0
+
         omega_t = self.omega * t
-        
-        if t < 0 or t > (2 * np.pi * self.ncyc / self.omega): 
-            pass
 
         arg = omega_t / (2 * self.ncyc)
         envelope = np.sin(arg) ** 2

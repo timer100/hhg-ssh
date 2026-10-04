@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools==84.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hhg-ssh"
+version = "0.1.0"
+description = "Finite SSH-chain electronic dynamics and high-order harmonic generation"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "numpy>=2.2,<3",
+    "scipy>=1.15,<2",
+    "matplotlib>=3.10,<4",
+    "tqdm>=4.67,<5",
+]
+
+[project.optional-dependencies]
+notebook = ["jupyterlab>=4.5,<5", "ipykernel>=6.30,<8"]
+
+[dependency-groups]
+dev = ["nbclient>=0.10,<1", "nbformat>=5.10,<6", "setuptools==84.0.0"]
+
+[tool.setuptools.packages.find]
+include = ["hhg", "hhg.*"]
+
+[tool.uv]
+required-version = ">=0.12.23,<0.13"

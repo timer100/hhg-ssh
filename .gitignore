@@ -24,6 +24,11 @@ wheels/
 # Virtual Environments
 .env
 .venv
+.venv-*/
+.tools/
+.release-backups/
+.publication/
+.validation/
 env/
 venv/
 ENV/
@@ -32,13 +37,9 @@ ENV/
 .vscode/
 .idea/
 
-# Project Specific
-Raw_data/
-Results/
-Dailly_Report/
-
 # Jupyter Notebooks
 .ipynb_checkpoints
 
 # Agent
 .agent
+AGENTS.md

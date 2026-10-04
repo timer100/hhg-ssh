@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import eigh
 from scipy.sparse import lil_matrix, csr_matrix, diags
 from scipy.sparse.linalg import eigsh
 from .base import Hamiltonian
@@ -83,29 +84,45 @@ class SSHModel(Hamiltonian):
             
         return self.static_H + diags(diag, 0, format='csr')
 
-    def _get_odd_parity_edge_state(self):
+    def _get_lowest_parity_edge_state(self):
+        """Resolve the central pair and select the occupied parity analytically.
+
+        For this inversion-symmetric chain with negative NN hoppings, the
+        lower central state is odd for N = 4m and even for N = 4m + 2.
+        This avoids sorting numerically unresolved edge energies; see
+        Rutkevich, doi:10.1155/2018/9784091, Eq. (35).
+        Only call this for an inversion-symmetric (V_A == 0) chain.
+        """
         H0 = self.build_time_dependent_hamiltonian(0, lambda t: 0.0)
         
         N_occ = self.N // 2
-        eigvals, eigvecs = eigsh(H0, k=N_occ + 1, which='SA')
+        if N_occ + 1 >= self.N:
+            eigvals, eigvecs = eigh(H0.toarray())
+        else:
+            eigvals, eigvecs = eigsh(H0, k=N_occ + 1, which='SA')
         idx = np.argsort(eigvals)
         eigvecs = eigvecs[:, idx]
 
         psi1 = eigvecs[:, N_occ - 1]
         psi2 = eigvecs[:, N_occ]
 
-        P = np.eye(self.N)[::-1]
         subspace = np.stack([psi1, psi2], axis=1)
-        P_sub = subspace.T.conj() @ (P @ subspace)
-        _, Vp = np.linalg.eigh(P_sub)
+        P_sub = subspace.T.conj() @ subspace[::-1]
+        parities, Vp = np.linalg.eigh(P_sub)
         
-        # Select the odd parity state
-        psi_odd = subspace @ Vp[:, 0]
-        psi_odd /= np.linalg.norm(psi_odd)
-
-        return psi_odd
+        parity_states = subspace @ Vp
+        parity_states /= np.linalg.norm(parity_states, axis=0)
+        target_parity = -1 if self.N % 4 == 0 else 1
+        return parity_states[:, np.argmin(np.abs(parities - target_parity))]
 
     def get_ground_state(self) -> np.ndarray:
+        """Return the N/2 lowest-energy occupied orbitals, ordered by energy.
+
+        For inversion-symmetric topological chains, resolve the central pair
+        into parity eigenstates and select the lower central branch by chain
+        length: odd for N = 4m, even for N = 4m + 2. This remains deterministic
+        when the edge-energy splitting is below floating-point resolution.
+        """
         # 1. Build H0
         H0 = self.build_time_dependent_hamiltonian(0, lambda t: 0.0)
         N_occ = self.N // 2
@@ -115,8 +132,7 @@ class SSHModel(Hamiltonian):
         psi = vecs[:, order]
         
         # 2. Check Topological Condition
-        if abs(self.V_A) < 1e-9 and self.delta < 0:
-            # Enforce Parity on the last occupied state (Edge State)
-            psi[:, -1] = self._get_odd_parity_edge_state()
+        if self.V_A == 0.0 and self.delta < 0:
+            psi[:, -1] = self._get_lowest_parity_edge_state()
             
         return psi
