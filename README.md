@@ -86,7 +86,7 @@ The tutorials use `N=100` and `N=800`; these are example sizes, not convergence 
 
 ### Intended use and liability
 
-This code is intended for academic reference, research, and education and is distributed under the [MIT License](LICENSE), which also permits commercial use subject to its terms. It is provided on an **“AS IS” basis, without warranty of any kind**. Liability is governed by the MIT License. Users are responsible for independently verifying the implementation and physical interpretation before relying on or publishing results. Please cite the relevant original studies when using their methods or findings.
+This code is intended for academic reference, research, and education and is distributed under the [MIT License](LICENSE). It is provided on an **“AS IS” basis, without warranty of any kind**. Liability is governed by the MIT License. Users are responsible for independently verifying the implementation and physical interpretation before relying on or publishing results. Please cite the relevant original studies when using their methods or findings.
 
 ## License
 
